@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tower of Hanoi Solver</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#0f172a; color:#e5e7eb; margin:0; padding:20px; }
+    h1 { color:#60a5fa; }
+    .card { background:#111827; padding:20px; border-radius:10px; margin-bottom:20px; }
+    input, button { padding:8px; margin:5px; border-radius:5px; border:none; }
+    button { background:#60a5fa; color:#0f172a; font-weight:bold; cursor:pointer; }
+    .moves { margin-top:15px; max-height:300px; overflow:auto; background:#1f2937; padding:10px; border-radius:8px; }
+    .move { padding:5px; border-bottom:1px solid #374151; }
+  </style>
+</head>
+<body>
+  <h1>⛆ Tower of Hanoi Solver</h1>
+
+  <div class="card">
+    <h2>How it Works</h2>
+    <ol>
+      <li>If 1 disk, move it to destination</li>
+      <li>Move N-1 disks to auxiliary tower</li>
+      <li>Move largest disk to destination</li>
+      <li>Move N-1 disks from auxiliary to destination</li>
+    </ol>
+    <h2>Rules</h2>
+    <ul>
+      <li>Only one disk can be moved at a time</li>
+      <li>Larger disk cannot be placed on smaller disk</li>
+      <li>Disks must be moved one at a time</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <label>Number of disks:</label>
+    <input type="number" id="disks" value="3" min="1" max="10" />
+    <button onclick="solve()">Solve</button>
+
+    <div id="stats"></div>
+    <div class="moves" id="movesList"></div>
+  </div>
+
+  <script>
+    async function solve() {
+      const n = document.getElementById("disks").value;
+      const res = await fetch("/solve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ disks: n })
+      });
+      const data = await res.json();
+
+      document.getElementById("stats").innerHTML =
+        `<p>Total moves: ${data.total_moves} | Minimum moves: ${data.min_moves}</p>`;
+
+      const movesDiv = document.getElementById("movesList");
+      movesDiv.innerHTML = "";
+      data.moves.forEach((m, i) => {
+        const div = document.createElement("div");
+        div.className = "move";
+        div.textContent = `Move ${i+1}: ${m}`;
+        movesDiv.appendChild(div);
+      });
+    }
+  </script>
+</body>
+</html>
